@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Carousel - Fixed</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+        
+        :root {
+            /* --- CSS Variables for item transformations --- */
+            --item1-transform: translateX(-100%) translateY(-5%) scale(1.5);
+            --item1-filter: blur(30px);
+            --item1-zIndex: 11;
+            --item1-opacity: 0;
+
+            --item2-transform: translateX(0);
+            --item2-filter: blur(0px);
+            --item2-zIndex: 10;
+            --item2-opacity: 1;
+
+            --item3-transform: translate(50%, 10%) scale(0.8);
+            --item3-filter: blur(10px);
+            --item3-zIndex: 9;
+            --item3-opacity: 1;
+
+            --item4-transform: translate(90%, 20%) scale(0.5);
+            --item4-filter: blur(30px);
+            --item4-zIndex: 8;
+            --item4-opacity: 1;
+            
+            --item5-transform: translate(120%, 30%) scale(0.3);
+            --item5-filter: blur(40px);
+            --item5-zIndex: 7;
+            --item5-opacity: 0;
+        }
+
+        body {
+            margin: 0;
+            background: linear-gradient(to right, #0f172a, #334155);
+            font-family: Poppins, sans-serif;
+            color: #e2e8f0;
+            position: relative;
+            overflow-x: hidden; 
+        }
+
+        header {
+            width: 1140px;
+            max-width: 90%;
+            display: flex;
+            justify-content: space-between;
+            margin: auto;
+            height: 80px; 
+            align-items: center;
+            position: relative;
+            z-index: 10;
+        }
+        header .logo {
+            font-weight: bold;
+        }
+        header nav {
+            display: flex;
+            align-items: flex-start;
+            gap: 30px;
+        }
+        header nav a {
+            text-decoration: none;
+            color: #cbd5e1;
+            font-weight: 500;
+            z-index: 1; 
+            position: relative;
+            font-size: 14px;
+        }
+        .carousel {
+            position: relative;
+            height: 800px;
+            overflow: hidden;
+            margin-top: -80px; 
+            cursor: grab; 
+        }
+        .carousel:active {
+            cursor: grabbing;
+        }
+        .carousel .list {
+            position: absolute;
+            width: 1140px;
+            max-width: 90%;
+            height: 80%;
+            left: 50%;
+            transform: translateX(-50%);
+            pointer-events: none; 
+        }
+        .carousel .list .item {
+            position: absolute;
+            left: 0%;
+            width: 70%;
+            height: 100%;
+            font-size: 15px;
+            transition: left 0.5s, opacity 0.5s, width 0.5s;
+        }
+        .carousel .list .item:nth-child(n + 6) {
+            opacity: 0;
+            pointer-events: none;
+        }
+        .carousel .list .item:nth-child(2) {
+            z-index: 10;
+            transform: translateX(0);
+        }
+        .carousel .list .item img {
+            width: 50%;
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            transition: right 1.5s;
+            object-fit: contain;
+            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.2));
+        }
+        .carousel .list .item .introduce {
+            opacity: 0;
+            pointer-events: none;
+        }
+        .carousel .list .item:nth-child(2) .introduce {
+            opacity: 1;
+            pointer-events: auto;
+            width: 400px;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            transition: opacity 0.5s;
+        }
+        .carousel .list .item .introduce .title {
+            font-size: 2em;
+            font-weight: 500;
+            line-height: 1em;
+            color: #94a3b8;
+        }
+        .carousel .list .item .introduce .topic {
+            font-size: 4em;
+            font-weight: 500;
+            color: #f1f5f9;
+        }
+        .carousel .list .item .introduce .des {
+            font-size: small;
+            color: #94a3b8;
+        }
+        .carousel .list .item .introduce .seeMore {
+            font-family: Poppins, sans-serif;
+            margin-top: 1.2em;
+            padding: 5px 0;
+            border: none;
+            border-bottom: 1px solid #94a3b8;
+            background-color: transparent;
+            font-weight: bold;
+            letter-spacing: 3px;
+            cursor: pointer;
+            transition: background 0.5s;
+            color: #f1f5f9;
+            text-decoration: none;
+        }
+        .carousel .list .item .introduce .seeMore:hover {
+            background: #1e293b;
+        }
+        .carousel .list .item:nth-child(1) {
+            transform: var(--item1-transform);
+            filter: var(--item1-filter);
+            z-index: var(--item1-zIndex);
+            opacity: var(--item1-opacity);
+            pointer-events: none;
+        }
+        .carousel .list .item:nth-child(3) {
+            transform: var(--item3-transform);
+            filter: var(--item3-filter);
+            z-index: var(--item3-zIndex);
+        }
+        .carousel .list .item:nth-child(4) {
+            transform: var(--item4-transform);
+            filter: var(--item4-filter);
+            z-index: var(--item4-zIndex);
+        }
+        .carousel .list .item:nth-child(5) {
+            transform: var(--item5-transform);
+            filter: var(--item5-filter);
+            opacity: var(--item5-opacity);
+            pointer-events: none;
+        }
+        .carousel .list .item:nth-child(2) .introduce .title,
+        .carousel .list .item:nth-child(2) .introduce .topic,
+        .carousel .list .item:nth-child(2) .introduce .des,
+        .carousel .list .item:nth-child(2) .introduce .seeMore {
+            opacity: 0;
+            animation: showContent 0.5s 1s ease-in-out 1 forwards;
+        }
+        @keyframes showContent {
+            from {
+                transform: translateY(-30px);
+                filter: blur(10px);
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+                filter: blur(0px);
+            }
+        }
+        .carousel .list .item:nth-child(2) .introduce .topic {
+            animation-delay: 1.2s;
+        }
+        .carousel .list .item:nth-child(2) .introduce .des {
+            animation-delay: 1.4s;
+        }
+        .carousel .list .item:nth-child(2) .introduce .seeMore {
+            animation-delay: 1.6s;
+        }
+        .carousel.next .item:nth-child(1) {
+            animation: transformFromPosition2 0.5s ease-in-out 1 forwards;
+        }
+        @keyframes transformFromPosition2 {
+            from {
+                transform: var(--item2-transform);
+                filter: var(--item2-filter);
+                opacity: var(--item2-opacity);
+            }
+        }
+        .carousel.next .item:nth-child(2) {
+            animation: transformFromPosition3 0.7s ease-in-out 1 forwards;
+        }
+        @keyframes transformFromPosition3 {
+            from {
+                transform: var(--item3-transform);
+                filter: var(--item3-filter);
+                opacity: var(--item3-opacity);
+            }
+        }
+        .carousel.next .item:nth-child(3) {
+            animation: transformFromPosition4 0.9s ease-in-out 1 forwards;
+        }
+        @keyframes transformFromPosition4 {
+            from {
+                transform: var(--item4-transform);
+                filter: var(--item4-filter);
+                opacity: var(--item4-opacity);
+            }
+        }
+        .carousel.next .item:nth-child(4) {
+            animation: transformFromPosition5 1.1s ease-in-out 1 forwards;
+        }
+        @keyframes transformFromPosition5 {
+            from {
+                transform: var(--item5-transform);
+                filter: var(--item5-filter);
+                opacity: var(--item5-opacity);
+            }
+        }
+        .carousel.prev .list .item:nth-child(5) {
+            animation: transformFromPosition4 0.5s ease-in-out 1 forwards;
+        }
+        .carousel.prev .list .item:nth-child(4) {
+            animation: transformFromPosition3 0.7s ease-in-out 1 forwards;
+        }
+        .carousel.prev .list .item:nth-child(3) {
+            animation: transformFromPosition2 0.9s ease-in-out 1 forwards;
+        }
+        .carousel.prev .list .item:nth-child(2) {
+            animation: transformFromPosition1 1.1s ease-in-out 1 forwards;
+        }
+        @keyframes transformFromPosition1 {
+            from {
+                transform: var(--item1-transform);
+                filter: var(--item1-filter);
+                opacity: var(--item1-opacity);
+            }
+        }
+        .carousel .list .item .detail {
+            opacity: 0;
+            pointer-events: none;
+        }
+        .carousel.showDetail .list .item:nth-child(3),
+        .carousel.showDetail .list .item:nth-child(4),
+        .carousel.showDetail .list .item:nth-child(5) {
+            left: 100%;
+            opacity: 0;
+            pointer-events: none;
+        }
+        .carousel.showDetail .list .item:nth-child(2) {
+            width: 100%;
+        }
+        .carousel.showDetail .list .item:nth-child(2) .introduce {
+            opacity: 0;
+            pointer-events: none;
+        }
+        .carousel.showDetail .list .item:nth-child(2) img {
+            right: 50%;
+        }
+        .carousel.showDetail .list .item:nth-child(2) .detail {
+            opacity: 1;
+            width: 50%;
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            text-align: right;
+            pointer-events: auto;
+        }
+        .carousel.showDetail .list .item:nth-child(2) .detail .title {
+            font-size: 4em;
+        }
+        .carousel.showDetail .list .item:nth-child(2) .detail .specifications {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+            border-top: 1px solid #475569;
+            margin-top: 20px;
+            padding-top: 10px;
+        }
+        .carousel.showDetail .list .item:nth-child(2) .detail .specifications div {
+            width: 90px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+        .carousel.showDetail .list .item:nth-child(2) .detail .specifications div p:nth-child(1) {
+            font-weight: bold;
+        }
+        
+        /* --- NEW/MODIFIED: Checkout section styles --- */
+        .carousel.showDetail .list .item:nth-child(2) .detail .checkout {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 20px;
+            margin-top: 20px;
+            width: 100%;
+        }
+        .carousel.showDetail .list .item:nth-child(2) .detail .checkout .price {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 1.5em;
+            font-weight: 500;
+            color: #f1f5f9;
+        }
+        .carousel.showDetail .list .item:nth-child(2) .detail .checkout a {
+            font-family: Poppins, sans-serif;
+            background-color: transparent;
+            color: #cbd5e1;
+            padding: 10px 20px;
+            letter-spacing: 2px;
+            font-weight: 500;
+            cursor: pointer;
+            border-radius: 4px;
+            text-decoration: none;
+            border: 1px solid #475569;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .carousel.showDetail .list .item:nth-child(2) .detail .checkout a:hover {
+            background-color: #4f46e5;
+            color: #e0e7ff;
+            border-color: #4f46e5;
+        }
+
+        .carousel.showDetail .list .item:nth-child(2) .detail .title,
+        .carousel.showDetail .list .item:nth-child(2) .detail .des,
+        .carousel.showDetail .list .item:nth-child(2) .detail .specifications,
+        .carousel.showDetail .list .item:nth-child(2) .detail .checkout {
+            opacity: 0;
+            animation: showContent 0.5s 1s ease-in-out 1 forwards;
+        }
+        .carousel.showDetail .list .item:nth-child(2) .detail .des {
+            animation-delay: 1.2s;
+        }
+        .carousel.showDetail .list .item:nth-child(2) .detail .specifications {
+            animation-delay: 1.4s;
+        }
+        .carousel.showDetail .list .item:nth-child(2) .detail .checkout {
+            animation-delay: 1.6s;
+        }
+        #back {
+            position: absolute;
+            z-index: 100;
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            border: none;
+            border-bottom: 1px solid #94a3b8;
+            font-family: Poppins, sans-serif;
+            font-weight: bold;
+            letter-spacing: 3px;
+            background-color: transparent;
+            color: #f1f5f9;
+            padding: 10px;
+            opacity: 0;
+            transition: opacity 0.5s;
+            pointer-events: none;
+            cursor: pointer;
+        }
+        .carousel.showDetail #back {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        
+        /* --- Icon Styles and Animations --- */
+        .icon-container {
+            cursor: pointer;
+            user-select: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4px;
+        }
+        
+        .nav-item-with-icon {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+        .nav-item-with-icon .icon-container {
+            padding: 0;
+        }
+
+        /* Bell Icon */
+        .bell-icon .bell-path {
+            transform-origin: bottom center;
+            transition: transform 0.5s ease-in-out;
+        }
+        .bell-icon .ring-path {
+            opacity: 0;
+            transition: opacity 0.5s ease-out;
+            stroke-dasharray: 25;
+            stroke-dashoffset: 25;
+        }
+        .bell-icon:hover .bell-path {
+            animation: bell-shake 0.5s ease-in-out;
+        }
+        .bell-icon:hover .ring-path {
+            animation: ring-fade 0.5s ease-out;
+        }
+        @keyframes bell-shake {
+            10%, 90% { transform: rotate(-10deg); }
+            20%, 80% { transform: rotate(10deg); }
+            30%, 50%, 70% { transform: rotate(-10deg); }
+            40%, 60% { transform: rotate(10deg); }
+        }
+        @keyframes ring-fade {
+            from { stroke-dashoffset: 25; opacity: 1; }
+            to { stroke-dashoffset: 0; opacity: 0; }
+        }
+
+        /* Dollar Badge Icon */
+        .dollar-badge-icon .badge-path {
+            transform-origin: center;
+            transition: transform 0.5s ease-in-out;
+        }
+        .dollar-badge-icon .dollar-path-group {
+            transform-origin: center;
+            transition: transform 0.8s ease-in-out;
+        }
+        .dollar-badge-icon:hover .badge-path {
+            transform: scale(1.1);
+        }
+        .dollar-badge-icon:hover .dollar-path-group {
+            transform: rotateY(360deg);
+        }
+
+        /* User Icon */
+        .user-icon .user-circle-path,
+        .user-icon .user-body-path {
+            stroke-dashoffset: 1;
+            transition: stroke-dashoffset 0.6s ease-out;
+        }
+        .user-icon .user-body-path {
+            transition-delay: 0.2s;
+        }
+        .user-icon:hover .user-circle-path,
+        .user-icon:hover .user-body-path {
+            stroke-dashoffset: 0;
+        }
+
+        /* Paperclip Icon */
+        .paperclip-icon .paperclip-main-path,
+        .paperclip-icon .paperclip-extra-path {
+            stroke-dashoffset: 1;
+            transition: stroke-dashoffset 0.8s ease-in-out;
+        }
+        .paperclip-icon .paperclip-extra-path {
+            transition-delay: 0.6s;
+        }
+        .paperclip-icon:hover .paperclip-main-path,
+        .paperclip-icon:hover .paperclip-extra-path {
+            stroke-dashoffset: 0;
+        }
+
+        @media screen and (max-width: 991px) {
+            .carousel .list .item {
+                width: 90%;
+            }
+            .carousel.showDetail .list .item:nth-child(2) .detail .specifications {
+                overflow: auto;
+            }
+            .carousel.showDetail .list .item:nth-child(2) .detail .title {
+                font-size: 2em;
+            }
+        }
+        @media screen and (max-width: 767px) {
+            .carousel {
+                height: 600px;
+            }
+            .carousel .list .item {
+                width: 100%;
+                font-size: 10px;
+            }
+            .carousel .list {
+                height: 100%;
+            }
+            .carousel .list .item:nth-child(2) .introduce {
+                width: 50%;
+            }
+            .carousel .list .item img {
+                width: 40%;
+            }
+            .carousel.showDetail .list .item:nth-child(2) .detail {
+                backdrop-filter: blur(10px);
+                font-size: small;
+            }
+            .carousel .list .item:nth-child(2) .introduce .des,
+            .carousel.showDetail .list .item:nth-child(2) .detail .des {
+                height: 100px;
+                overflow: auto;
+            }
+            .carousel.showDetail .list .item:nth-child(2) .detail .checkout {
+                display: flex;
+                flex-direction: column;
+                align-items: flex-end;
+                gap: 10px;
+                width: max-content;
+                float: right;
+            }
+        }
+    </style>
+</head>
+<body>
+    
+<header>
+    <div class="logo">Kikis Beauty Store</div>
+    <nav>
+        <div class="nav-item-with-icon">
+            <div class="icon-container user-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle class="user-circle-path" cx="12" cy="8" r="5" pathLength="1"></circle>
+                    <path class="user-body-path" d="M20 21a8 8 0 0 0-16 0" pathLength="1"></path>
+                </svg>
+            </div>
+            <a href="#">Home</a>
+        </div>
+        <div class="nav-item-with-icon">
+            <div class="icon-container bell-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path class="bell-path" d="M10.268 21a2 2 0 0 0 3.464 0"></path>
+                    <g class="ring-group">
+                        <path class="ring-path" d="M22 8c0-2.3-.8-4.3-2-6"></path>
+                        <path class="ring-path" d="M4 2C2.8 3.7 2 5.7 2 8"></path>
+                    </g>
+                    <path class="bell-path" d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"></path>
+                </svg>
+            </div>
+            <a href="https://amzn.to/3HfLRxi">Info</a>
+        </div>
+        <div class="nav-item-with-icon">
+             <div class="icon-container paperclip-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path class="paperclip-extra-path" d="M13.234 20.252 21 12.3" pathLength="1"></path>
+                    <path class="paperclip-main-path" d="m16 6-8.414 8.586a2 2 0 0 0 0 2.828 2 2 0 0 0 2.828 0l8.414-8.586a4 4 0 0 0 0-5.656 4 4 0 0 0-5.656 0l-8.415 8.585a6 6 0 1 0 8.486 8.486" pathLength="1"></path>
+                </svg>
+            </div>
+            <a href="https://wa.me/qr/RR2GFLYNOB62F1">Contact</a>
+        </div>
+    </nav>
+</header>
+
+<div class="carousel">
+    <div class="list">
+        <!-- Item 6 -->
+     <div class="item">
+            <img src="https://i.ibb.co/N2xDLCHY/Picsart-25-08-02-20-11-10-066.png" onerror="this.onerror=null;this.src='https://placehold.co/600x600/0f172a/e2e8f0?text=Cleanser';">
+            <div class="introduce">
+                <div class="title">Serum</div>
+                <div class="topic">The Ordinary</div>
+                <div class="des">
+                    The Ordinary Niacinamide 10% + Zinc 1%, Smoothing Serum for Blemish-Prone Skin
+                </div>
+                <button class="seeMore">SEE MORE &#8599;</button>
+            </div>
+            <div class="detail">
+                <div class="title">Olay Face Moisturizer</div>
+                <div class="des">
+                    A high-strength niacinamide formula that reduces the appearance of pores and regulates oil production, with zinc to calm inflammation.
+
+                </div>
+                <div class="specifications">
+                    <div><p>Benefits</p><p>Clears congestion, balances sebum, improves texture and brightness
+</p></div>
+                    <div><p>Skin Type</p><p>Oily, acne-prone, or textured skin</p></div>
+                </div>
+                <div class="checkout">
+                    <div class="price">
+                        <span>$12.50</span>
+                        <div class="icon-container dollar-badge-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path class="badge-path" d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"></path>
+                                <g class="dollar-path-group"><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"></path><path d="M12 18V6"></path></g>
+                            </svg>
+                        </div>
+                    </div>
+                    <a href="https://amzn.to/4ongYIc">PURCHASE</a>
+                </div>
+            </div>
+        </div>          
+  <div class="item">
+            <img src="https://i.ibb.co/chnz7wxx/Picsart-25-08-02-20-09-31-896.png" onerror="this.onerror=null;this.src='https://placehold.co/600x600/0f172a/e2e8f0?text=Cleanser';">
+            <div class="introduce">
+                <div class="title">Anti-aging cream</div>
+                <div class="topic">Olay Face Moisturizer</div>
+                <div class="des">
+                    Packed with amino peptides, niacinamide, and hyaluronic acid, this cream firms and lifts sagging areas while deeply moisturizing.
+                </div>
+                <button class="seeMore">SEE MORE &#8599;</button>
+            </div>
+            <div class="detail">
+                <div class="title">Olay Face Moisturizer</div>
+                <div class="des">
+                    Regenerist Micro-Sculpting Cream for Women, Fragrance-Free - Hydrating, Anti-Aging, Anti-Wrinkle, Firming Skin Care - Hyaluronic Acid, Niacinamide, Amino Peptides, 1.7 Oz
+                </div>
+                <div class="specifications">
+                    <div><p>Benefits</p><p>Improves firmness, reduces wrinkles, enhances glow</p></div>
+                    <div><p>Skin Type</p><p>suitable for dry skin, sensitive skin, oily skin, acne-prone</p></div>
+                </div>
+                <div class="checkout">
+                    <div class="price">
+                        <span>$24.00</span>
+                        <div class="icon-container dollar-badge-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path class="badge-path" d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"></path>
+                                <g class="dollar-path-group"><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"></path><path d="M12 18V6"></path></g>
+                            </svg>
+                        </div>
+                    </div>
+                    <a href="https://amzn.to/4lbnH55">PURCHASE</a>
+                </div>
+            </div>
+        </div>      
+    <div class="item">
+            <img src="https://i.ibb.co/mF04GQXz/Picsart-25-08-02-20-08-50-603.png" onerror="this.onerror=null;this.src='https://placehold.co/600x600/0f172a/e2e8f0?text=Cleanser';">
+            <div class="introduce">
+                <div class="title">Serum</div>
+                <div class="topic">L'Oreal Paris Revitalift 1.5%</div>
+                <div class="des">
+                    Pure Hyaluronic Acid Serum for Face, Anti Aging Serum to Hydrate Skin & Reduce Wrinkles, Fragrance Free Skin Care for All Skin Types, 1 Oz
+                </div>
+                <button class="seeMore">SEE MORE &#8599;</button>
+            </div>
+            <div class="detail">
+                <div class="title">L'Oreal Paris Revitalif</div>
+                <div class="des">
+                    Intensive Hydrating 1.5% Pure Hyaluronic Acid Serum: Our Hyaluronic Acid Serum for Face with Vitamin C moisturizes skin instantly for dewy glow and visibly plumped skin; Reduces wrinkles and boosts skin's radiance. Effective for all skin tones
+                </div>
+                <div class="specifications">
+                    <div><p>Benefits</p><p>Plumping, intense hydration</p></div>
+                    <div><p>Skin Type</p><p>suitable for dry skin, sensitive skin, oily skin, acne-prone</p></div>
+                </div>
+                <div class="checkout">
+                    <div class="price">
+                        <span>$21.00</span>
+                        <div class="icon-container dollar-badge-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path class="badge-path" d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"></path>
+                                <g class="dollar-path-group"><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"></path><path d="M12 18V6"></path></g>
+                            </svg>
+                        </div>
+                    </div>
+                    <a href="https://amzn.to/45xfrHR">PURCHASE</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="item">
+            <img src="https://i.ibb.co/ycj2hvyH/Picsart-25-08-02-20-02-48-846.png" onerror="this.onerror=null;this.src='https://placehold.co/600x600/0f172a/e2e8f0?text=Cleanser';">
+            <div class="introduce">
+                <div class="title">Night Cream</div>
+                <div class="topic">CeraVe</div>
+                <div class="des">
+                    CeraVe Skin Renewing Night Cream, Niacinamide, Peptide Complex, and Hyaluronic Acid Moisturizer for Face, 1.7 Ounce, Packaging may Vary
+                </div>
+                <button class="seeMore">SEE MORE &#8599;</button>
+            </div>
+            <div class="detail">
+                <div class="title">CeraVe</div>
+                <div class="des">
+                    Ceramides are found naturally in the skin and make up 50% of the lipids in the skin barrier. All CeraVe products are formulated with three essential ceramides (1, 3, 6-II) to help restore and maintain the skin’s natural barrier
+                </div>
+                <div class="specifications">
+                    <div><p>Age Range</p><p>Adult</p></div>
+                    <div><p>Skin Type</p><p>suitable for dry skin, sensitive skin, oily skin, acne-prone</p></div>
+                </div>
+                <div class="checkout">
+                    <div class="price">
+                        <span>$17</span>
+                        <div class="icon-container dollar-badge-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path class="badge-path" d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"></path>
+                                <g class="dollar-path-group"><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"></path><path d="M12 18V6"></path></g>
+                            </svg>
+                        </div>
+                    </div>
+                    <a href="https://amzn.to/4mn1WA9">PURCHASE</a>
+                </div>
+            </div>
+        </div>
+        <!-- Item 2 -->
+        <div class="item">
+            <img src="https://i.ibb.co/0V2Dm2Pc/Picsart-25-08-02-20-00-44-997.png" onerror="this.onerror=null;this.src='https://amzn.to/3H6KGQQ';">
+            <div class="introduce">
+                <div class="title">Serum</div>
+                <div class="topic">TruSkin Vitamin C Serum</div>
+                <div class="des">
+                    Anti Aging Face Serum with Vitamin C, Hyaluronic Acid, Vitamin E – Brightening Formula – Improve Appearance of Dark Spots, Tone, Fine Lines & Wrinkles, 1 Fl Oz
+                </div>
+                <button class="seeMore">SEE MORE &#8599;</button>
+            </div>
+            <div class="detail">
+                <div class="title">TruSkin Vitamin C Serum</div>
+                <div class="des">
+                     Anti Aging Face Serum with Vitamin C, Hyaluronic Acid, Vitamin E – Brightening Formula – Improve Appearance of Dark Spots, Tone, Fine Lines & Wrinkles, 1 Fl Oz
+                </div>
+                <div class="specifications">
+                    <div><p>Benefits</p><p>Brightening</p></div>
+                    <div><p>Skin Type</p><p>All, Dry, Normal, Combination</p></div>
+                </div>
+                <div class="checkout">
+                    <div class="price">
+                        <span>$21.99</span>
+                        <div class="icon-container dollar-badge-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path class="badge-path" d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"></path>
+                                <g class="dollar-path-group"><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"></path><path d="M12 18V6"></path></g>
+                            </svg>
+                        </div>
+                    </div>
+                    <a href="https://amzn.to/3H6KGQQ">PURCHASE</a>
+                </div>
+            </div>
+        </div>
+        <!-- Item 3 -->
+        <div class="item">
+            <img src="https://i.ibb.co/0pM33pK3/Picsart-25-08-02-20-01-39-995.png" onerror="this.onerror=null;this.src='https://amzn.to/3H6KGQQ';">
+            <div class="introduce">
+                <div class="title">Face Moisturizer</div>
+                <div class="topic">Neutrogena Hydro Boost</div>
+                <div class="des">
+                    Neutrogena Hydro Boost City Shield Water Gel Face Moisturizer with Broad Spectrum SPF 25, Hydrating Facial Sunscreen with Hyaluronic Acid, Oil-Free and Non-Comedogenic Face Lotion, 1.7 oz
+                </div>
+                <button class="seeMore">SEE MORE &#8599;</button>
+            </div>
+            <div class="detail">
+                <div class="title">Neutrogena Hydro Boost</div>
+                <div class="des">
+                     Neutrogena Hydro Boost City Shield Water Gel Face Moisturizer with Broad Spectrum SPF 25, Hydrating Facial Sunscreen with Hyaluronic Acid, Oil-Free and Non-Comedogenic Face Lotion, 1.7 oz
+                </div>
+                <div class="specifications">
+                    <div><p>Benefits</p><p>Dry Skin Hydrating</p></div>
+                    <div><p>Skin Type</p><p>All, Dry, Normal, Combination</p></div>
+                </div>
+                <div class="checkout">
+                    <div class="price">
+                        <span>$11.75</span>
+                        <div class="icon-container dollar-badge-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path class="badge-path" d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"></path>
+                                <g class="dollar-path-group"><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"></path><path d="M12 18V6"></path></g>
+                            </svg>
+                        </div>
+                    </div>
+                    <a href="https://amzn.to/3IZqbWG">PURCHASE</a>
+                </div>
+            </div>
+        </div>
+        <!-- Item 4 -->
+        <div class="item">
+            <img src="https://i.ibb.co/cX8J6v6p/Picsart-25-08-02-18-35-56-577.png" onerror="this.onerror=null;this.src='https://placehold.co/600x600/0f172a/e2e8f0?text=Toner';">
+            <div class="introduce">
+                <div class="title">TONER</div>
+                <div class="topic">FRANKLY AHA 8.05%</div>
+                <div class="des">
+                    Pore-Refining Exfoliator with Glycolic Acid, 17 Amino Acids, Hyaluronic Acid | Smooths Texture, Hydrates, Targets Flakiness | Korean Skin Care 3.38 fl oz
+                </div>
+                <button class="seeMore">SEE MORE &#8599;</button>
+            </div>
+            <div class="detail">
+                <div class="title">FRANKLY AHA 8.05% Toner</div>
+                <div class="des">
+                    This toner is formulated with 8.05% Glycolic Acid (AHA) to gently exfoliate dead skin cells, unclog pores, and improve skin texture. It helps to reveal a smoother, brighter complexion.
+                </div>
+                <div class="specifications">
+                    <div><p>Benefits</p><p>Dead cell care, pore clearing, pore minimizing, suitable for oily skin, gentle peeling</p></div>
+                    <div><p>Skin Type</p><p>Acne Prone, All, Combination, Oily</p></div>
+                </div>
+                <div class="checkout">
+                    <div class="price">
+                        <span>$24.00</span>
+                        <div class="icon-container dollar-badge-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path class="badge-path" d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"></path>
+                                <g class="dollar-path-group"><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"></path><path d="M12 18V6"></path></g>
+                            </svg>
+                        </div>
+                    </div>
+                    <a href="https://amzn.to/3IYB0bO">PURCHASE</a>
+                </div>
+            </div>
+        </div>
+        <!-- Item 5 -->
+        <div class="item">
+            <img src="https://i.ibb.co/HT556kGr/Picsart-25-08-02-20-04-20-114.png" onerror="this.onerror=null;this.src='https://placehold.co/600x600/0f172a/e2e8f0?text=Sunscreen';">
+            <div class="introduce">
+                <div class="title">Toner</div>
+                <div class="topic">COSRX Niacinamide 2% + BHA 4%</div>
+                <div class="des">
+                    Blackhead Exfoliant Toner 3.38 fl.oz / 100ml, Korean Toner, Blackhead Remover, Pore Minimizer for Enlarged Pores.
+                </div>
+                <button class="seeMore">SEE MORE &#8599;</button>
+            </div>
+            <div class="detail">
+                <div class="title">COSRX Niacinamide</div>
+                <div class="des">
+                    BHA penetrates deeply into the pores and helps clear clogged pores and gently exfoliates dead skin cells, giving the skin its natural glow. An easy and simple way to prevent acne and blackheads.
+                </div>
+                <div class="specifications">
+                    <div><p>Benefits</p><p>Exfoliating,Calming</p></div>
+                    <div><p>Skin Type</p><p>Combination, Dry, Normal, Oily, acne prone</p></div>
+                </div>
+                <div class="checkout">
+                    <div class="price">
+                        <span>$18.00</span>
+                        <div class="icon-container dollar-badge-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path class="badge-path" d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"></path>
+                                <g class="dollar-path-group"><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"></path><path d="M12 18V6"></path></g>
+                            </svg>
+                        </div>
+                    </div>
+                    <a href="https://amzn.to/4l5oKTZ">PURCHASE</a>
+                </div>
+            </div>
+        </div>
+    </div>
+       <!-- This button is now outside the list div -->
+    <button id="back">See All &#8599;</button>
+</div>
+
+<script>
+    // Select the main carousel container and the list of items
+    const carousel = document.querySelector('.carousel');
+    const listHTML = document.querySelector('.carousel .list');
+    const backButton = document.getElementById('back');
+
+    // A flag to prevent rapid clicks/swipes from breaking the animation
+    let canInteract = true;
+
+    // Function to handle showing the next or previous slider
+    const showSlider = (type) => {
+        // If an animation is in progress, do nothing
+        if (!canInteract) return;
+        canInteract = false;
+
+        // Remove animation classes to reset
+        carousel.classList.remove('next', 'prev');
+        // Get all carousel items
+        let items = document.querySelectorAll('.carousel .list .item');
+        
+        if (type === 'next') {
+            // Move the first item to the end of the list
+            listHTML.appendChild(items[0]);
+            // Add the 'next' class to trigger the forward animation
+            carousel.classList.add('next');
+        } else {
+            // Move the last item to the beginning of the list
+            listHTML.prepend(items[items.length - 1]);
+            // Add the 'prev' class to trigger the backward animation
+            carousel.classList.add('prev');
+        }
+        
+        // Re-enable interaction after the animation completes (1.1s is the longest animation)
+        setTimeout(() => {
+            canInteract = true;
+        }, 1100); 
+    }
+
+    // Variables for swipe detection
+    let startX = 0;
+    let isDown = false;
+
+    // Function to handle the start of a swipe (mousedown or touchstart)
+    function handleSwipeStart(e) {
+        // Prevent swipe if a link/button inside the carousel was the target
+        if (e.target.closest('a, button')) return;
+        // Don't allow swiping when the detail view is open
+        if (carousel.classList.contains('showDetail')) return;
+        
+        isDown = true;
+        // Record the starting X position
+        startX = e.pageX || e.touches[0].pageX;
+    }
+
+    // Function to handle the end of a swipe (mouseup or touchend)
+    function handleSwipeEnd(e) {
+        if (!isDown) return;
+        isDown = false;
+        // Record the ending X position
+        const endX = e.pageX || e.changedTouches[0].pageX;
+        const diffX = startX - endX;
+
+        // If swiped left more than 50 pixels
+        if (diffX > 50) {
+            showSlider('next');
+        } 
+        // If swiped right more than 50 pixels
+        else if (diffX < -50) {
+            showSlider('prev');
+        }
+    }
+
+    // Add event listeners for mouse and touch swipes
+    carousel.addEventListener('mousedown', handleSwipeStart);
+    carousel.addEventListener('touchstart', handleSwipeStart, { passive: true });
+    carousel.addEventListener('mouseup', handleSwipeEnd);
+    carousel.addEventListener('touchend', handleSwipeEnd);
+    // Reset swipe state if the mouse leaves the carousel area
+    carousel.addEventListener('mouseleave', () => { isDown = false; });
+
+    // Event listener for the "SEE MORE" button
+    carousel.addEventListener('click', function(e) {
+        if (e.target.classList.contains('seeMore')) {
+            e.stopPropagation(); // Prevent the carousel click from firing
+            carousel.classList.add('showDetail');
+        }
+    });
+
+    // Event listener for the "See All" back button
+    backButton.onclick = (e) => {
+        e.stopPropagation();
+        carousel.classList.remove('showDetail');
+    }
+
+</script>
+</body>
+</html>
+
